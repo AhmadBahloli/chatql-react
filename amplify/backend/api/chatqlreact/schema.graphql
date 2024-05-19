@@ -1,7 +1,7 @@
 type User 
   @model 
   @auth(rules: [{ allow: owner, ownerField: "id", operations: [create, update, delete, read] }]) {
-  id: ID!
+  id: ID! @primaryKey
   username: String!
   conversations: [ConvoLink] @hasMany(indexName: "byUser", fields: ["id"])
   messages: [Message] @hasMany(indexName: "byUser", fields: ["id"])
@@ -16,7 +16,7 @@ type Conversation
     subscriptions: null
   )
   @auth(rules: [{ allow: owner, ownerField: "members", operations: [create, update, delete, read] }]) {
-  id: ID!
+  id: ID! @primaryKey
   messages: [Message] @hasMany(indexName: "byConversation", fields: ["id"])
   associated: [ConvoLink] @hasMany(indexName: "byConversation", fields: ["id"])
   name: String!
@@ -28,7 +28,7 @@ type Conversation
 type Message 
   @model(subscriptions: null, queries: null) 
   @auth(rules: [{ allow: owner, ownerField: "authorId", operations: [create, update, delete, read] }]) {
-  id: ID!
+  id: ID! @primaryKey
   author: User @belongsTo(fields: ["authorId"])
   authorId: String
   content: String!
@@ -48,9 +48,9 @@ type ConvoLink
     { allow: owner, ownerField: "convoLinkUserId", operations: [create, update, delete, read] },
     { allow: groups, groups: ["Admin"], operations: [create, update, delete, read] }
   ])
-  @key(name: "byUser", fields: ["convoLinkUserId", "createdAt"])
-  @key(name: "byConversation", fields: ["convoLinkConversationId", "createdAt"]) {
-  id: ID!
+  @index(name: "byUser", fields: ["convoLinkUserId", "createdAt"])
+  @index(name: "byConversation", fields: ["convoLinkConversationId", "createdAt"]) {
+  id: ID! @primaryKey
   user: User! @belongsTo(fields: ["convoLinkUserId"])
   convoLinkUserId: ID
   conversation: Conversation! @belongsTo(fields: ["convoLinkConversationId"])
