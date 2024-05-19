@@ -47,7 +47,9 @@ type ConvoLink
   @auth(rules: [
     { allow: owner, ownerField: "convoLinkUserId", operations: [create, update, delete, read] },
     { allow: groups, groups: ["Admin"], operations: [create, update, delete, read] }
-  ]) {
+  ])
+  @index(name: "byUser", fields: ["convoLinkUserId", "createdAt"])
+  @index(name: "byConversation", fields: ["convoLinkConversationId", "createdAt"]) {
   id: ID!
   user: User! @belongsTo(fields: ["convoLinkUserId"])
   convoLinkUserId: ID
