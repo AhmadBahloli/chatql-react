@@ -3,8 +3,8 @@ type User
   @auth(rules: [{ allow: owner, ownerField: "id", operations: [create, update, delete, read] }]) {
   id: ID!
   username: String!
-  conversations: [ConvoLink] @connection(name: "UserLinks", fields: ["id"])
-  messages: [Message] @connection(name: "UserMessages", fields: ["id"])
+  conversations: [ConvoLink] @hasMany(indexName: "byUser", fields: ["id"])
+  messages: [Message] @hasMany(indexName: "byUser", fields: ["id"])
   createdAt: String
   updatedAt: String
 }
@@ -17,8 +17,8 @@ type Conversation
   )
   @auth(rules: [{ allow: owner, ownerField: "members", operations: [create, update, delete, read] }]) {
   id: ID!
-  messages: [Message] @connection(name: "ConvoMsgs", sortField: "createdAt", fields: ["id"])
-  associated: [ConvoLink] @connection(name: "AssociatedLinks", fields: ["id"])
+  messages: [Message] @hasMany(indexName: "byConversation", fields: ["id"])
+  associated: [ConvoLink] @hasMany(indexName: "byConversation", fields: ["id"])
   name: String!
   members: [String!]!
   createdAt: String
@@ -29,10 +29,10 @@ type Message
   @model(subscriptions: null, queries: null) 
   @auth(rules: [{ allow: owner, ownerField: "authorId", operations: [create, update, delete, read] }]) {
   id: ID!
-  author: User @connection(name: "UserMessages", fields: ["authorId"])
+  author: User @belongsTo(fields: ["authorId"])
   authorId: String
   content: String!
-  conversation: Conversation! @connection(name: "ConvoMsgs", sortField: "createdAt", fields: ["messageConversationId"])
+  conversation: Conversation! @belongsTo(fields: ["messageConversationId"])
   messageConversationId: ID!
   createdAt: String
   updatedAt: String
@@ -49,9 +49,9 @@ type ConvoLink
     { allow: groups, groups: ["Admin"], operations: [create, update, delete, read] }
   ]) {
   id: ID!
-  user: User! @connection(name: "UserLinks", fields: ["convoLinkUserId"])
+  user: User! @belongsTo(fields: ["convoLinkUserId"])
   convoLinkUserId: ID
-  conversation: Conversation! @connection(name: "AssociatedLinks", fields: ["convoLinkConversationId"])
+  conversation: Conversation! @belongsTo(fields: ["convoLinkConversationId"])
   convoLinkConversationId: ID!
   createdAt: String
   updatedAt: String
