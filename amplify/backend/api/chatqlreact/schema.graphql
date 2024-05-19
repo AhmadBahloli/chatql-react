@@ -5,8 +5,8 @@ type User
   username: String!
   conversations: [ConvoLink] @hasMany(indexName: "byUser", fields: ["id"])
   messages: [Message] @hasMany(indexName: "byUser", fields: ["id"])
-  createdAt: String
-  updatedAt: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type Conversation
@@ -21,8 +21,8 @@ type Conversation
   associated: [ConvoLink] @hasMany(indexName: "byConversation", fields: ["id"])
   name: String!
   members: [String!]!
-  createdAt: String
-  updatedAt: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type Message 
@@ -34,8 +34,8 @@ type Message
   content: String!
   conversation: Conversation! @belongsTo(fields: ["messageConversationId"])
   messageConversationId: ID!
-  createdAt: String
-  updatedAt: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type ConvoLink 
@@ -48,15 +48,15 @@ type ConvoLink
     { allow: owner, ownerField: "convoLinkUserId", operations: [create, update, delete, read] },
     { allow: groups, groups: ["Admin"], operations: [create, update, delete, read] }
   ])
-  @index(name: "byUser", fields: ["convoLinkUserId", "createdAt"])
-  @index(name: "byConversation", fields: ["convoLinkConversationId", "createdAt"]) {
+  @key(name: "byUser", fields: ["convoLinkUserId", "createdAt"])
+  @key(name: "byConversation", fields: ["convoLinkConversationId", "createdAt"]) {
   id: ID! @primaryKey
   user: User! @belongsTo(fields: ["convoLinkUserId"])
   convoLinkUserId: ID
   conversation: Conversation! @belongsTo(fields: ["convoLinkConversationId"])
   convoLinkConversationId: ID!
-  createdAt: String
-  updatedAt: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type Subscription {
